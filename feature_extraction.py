@@ -1,3 +1,9 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# In[1]:
+
+
 import scipy.io
 import numpy as np
 import sys
@@ -16,6 +22,9 @@ def switch_demo(argument):
         
     }
     return switcher.get(argument, 5)
+
+
+# In[2]:
 
 
 def cutoffradial(Rij) :
@@ -82,8 +91,10 @@ def angular(Ri,Rj,Rk,Rs,eta,theta,zeta) :
 
 
 
+# In[11]:
 
-qm7 = scipy.io.loadmat('/home/mehthab/Downloads/qm7.mat')
+
+qm7 = scipy.io.loadmat('./qm7.mat')
 
 #print(str(qm7))
 
@@ -107,6 +118,19 @@ pS = np.shape(P)
 
 print(str(rS))
 
+print("min: max: ")
+min = 10000
+max = -10000
+for molecule in R:
+    for atom in molecule:
+        for elem in atom:
+            if(elem < min):
+                min = elem
+            if(elem > max):
+                max = elem
+                
+print("min: ", min)
+print("max: ", max)
 
 
 #sys.exit()
@@ -159,68 +183,77 @@ a2[4][3] = 456
 a2[4][4] = 488
 
 
-for i in range(71) :
-	for j in range(23) :
-		u = int(Z[i][j])
-		v = switch_demo(u)
-		rc[i][j] = v
-		rc[i][j] = int(rc[i][j])
+# In[9]:
 
-for k in range(71) :
-	for i in range(23) :
 
-		if(int(rc[k][i])==0) :
-			continue
+print("started")
+for i in range(716):
+    if(i%10==0):
+        print("molecule: ", i)
+        
+    for j in range(23) :
+        u = int(Z[i][j])
+        v = switch_demo(u)
+        rc[i][j] = v
+        rc[i][j] = int(rc[i][j])
 
-		for j in range(23) :
-			if (i==j) :
-				continue
+for k in range(716) : #molecules
+    if(k%10==0):
+        print("molecule: ", k)
+    for i in range(23) : #atoms
 
-			if (int(rc[k][j]) == 0) :
-				continue
+        if(int(rc[k][i])==0) :
+            continue
 
-			start = a1[int(rc[k][j])-1]
+        for j in range(23) :
+            if (i==j) :
+                continue
 
-			for y in range(8) :
+            if (int(rc[k][j]) == 0) :
+                continue
 
-				Ar[i][start + y][k] = Ar[i][start + y][k] + radial(R[k][i],R[k][j],Rs[y],eta)
-				#Ar[i][start + y][k] = Ar[i][start + y][k] + 0
+            start = a1[int(rc[k][j])-1]
 
-			for y2 in  range((j+1),23):
+            for y in range(8) :
 
-				if (y2==i) :
-					continue
+                Ar[i][start + y][k] = Ar[i][start + y][k] + radial(R[k][i],R[k][j],Rs[y],eta)
+                #Ar[i][start + y][k] = Ar[i][start + y][k] + 0
 
-				if (y2==j) :
-					continue
+            for y2 in  range((j+1),23):
 
-				if (int(rc[k][y2]) == 0) :
-					continue
+                if (y2==i) :
+                    continue
 
-				start = a2[int(rc[k][j]-1)][int(rc[k][y2]-1)]
+                if (y2==j) :
+                    continue
 
-				for y3 in range(8) :
+                if (int(rc[k][y2]) == 0) :
+                    continue
 
-					for y4 in range(4) :
+                start = a2[int(rc[k][j]-1)][int(rc[k][y2]-1)]
 
-						Ar[i][int(start + int((y3+1)*(y4+1) - 1))][k] = Ar[i][int(start + int((y3+1)*(y4+1) - 1))][k] + angular(R[k][i],R[k][j],R[k][y2],Rs[y3],eta,the[y4],zeta)
-						#Ar[i][int(start + ((y3+1)*(y4+1) - 1))][k] = Ar[i][int(start + int((y3+1)*(y4+1) - 1))][k] + 0
+                for y3 in range(8) : #rs
+
+                    for y4 in range(4) : #theta
+
+                        Ar[i][int(start + int((y3+1)*(y4+1) - 1))][k] = Ar[i][int(start + int((y3+1)*(y4+1) - 1))][k] + angular(R[k][i],R[k][j],R[k][y2],Rs[y3],eta,the[y4],zeta)
+                        #Ar[i][int(start + ((y3+1)*(y4+1) - 1))][k] = Ar[i][int(start + int((y3+1)*(y4+1) - 1))][k] + 0
 
 print(np.shape(Ar))
 
 scipy.io.savemat('feature_vector.mat', {'AEVs' : Ar , 'Atomic_Num' : rc , 'labels' : T})
-
+print("Done")
 #return Ar,rc
 
-				
 
-				
-
-
-
-				
+# In[ ]:
 
 
 
-				
+
+
+# In[ ]:
+
+
+
 
