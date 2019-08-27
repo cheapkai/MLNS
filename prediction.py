@@ -243,13 +243,3 @@ def doNN():
     
 doNN()
 
-
-# '''
-# for molecule in range(10):
-#     for atom in range(23):
-#         aev = []
-#         for elem in AEVs[molecule][atom]:
-#             if(elem>0.0000000001):
-#                 aev.append(elem)
-#         print(aev)
-# '''
